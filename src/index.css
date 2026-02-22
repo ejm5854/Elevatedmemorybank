@@ -83,17 +83,53 @@ body {
 /* ─── COURSE BACKGROUND ───────────────────────── */
 .course-bg {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 0;
-  overflow: hidden;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .course-bg svg {
   width: 100%;
   height: 100%;
-  position: absolute;
-  inset: 0;
+  display: block;
+  /* parallax-style: SVG is taller than viewport, scroll drives which
+     section is visible via translateY on the wrapper */
+}
+
+/* Root stacking context so background scrolls with content */
+#root {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ─── FROSTED GLASS CARDS ─────────────────────── */
+.card,
+.home-card,
+.course-card,
+.scorecard-card,
+.leaderboard-card,
+.round-card,
+[class*="-card"],
+[class*="-panel"],
+[class*="-section"] {
+  background: rgba(6, 18, 10, 0.72) !important;
+  backdrop-filter: blur(18px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.4) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+/* ─── TEXT LEGIBILITY ─────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.6);
+}
+
+p, span, label, li, td, th, button {
+  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
 }
 
 /* Mow stripe animation */
