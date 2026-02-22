@@ -1,273 +1,377 @@
 /**
  * CourseBackground
- * Persistent full-screen SVG background that makes the app feel like
- * you're standing on the course — lush fairway green in the centre,
- * darker rough framing the edges, sand bunkers in the corners, a pond
- * on one side, mow stripes, and a distant flagstick.
+ * Fixed full-screen SVG that pans vertically as you scroll —
+ * green + flagstick at top, fairway in the middle, tee box at bottom.
+ * Uses a scroll listener to translateY the inner SVG so you "walk
+ * down the hole" as you scroll through the page.
  */
+import { useEffect, useRef } from 'react'
+
 export default function CourseBackground() {
+  const svgRef = useRef(null)
+
+  useEffect(() => {
+    function onScroll() {
+      if (!svgRef.current) return
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0
+      // SVG viewBox is 3200 tall, viewport shows 900px worth
+      // So we can pan up to (3200 - 900) = 2300 units
+      const pan = progress * 2300
+      svgRef.current.setAttribute('viewBox', `0 ${pan} 1440 900`)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <div className="course-bg" aria-hidden="true">
       <svg
+        ref={svgRef}
         viewBox="0 0 1440 900"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
+        style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
       >
         <defs>
-          {/* ── Rough texture gradient (dark edges) ── */}
-          <radialGradient id="roughGrad" cx="50%" cy="55%" r="72%">
-            <stop offset="0%"   stopColor="#1e5c32" />
-            <stop offset="38%"  stopColor="#174d29" />
-            <stop offset="65%"  stopColor="#0f3319" />
-            <stop offset="85%"  stopColor="#0a2410" />
-            <stop offset="100%" stopColor="#060f0a" />
-          </radialGradient>
+          {/* Base rough */}
+          <linearGradient id="roughBg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#071a0e" />
+            <stop offset="18%"  stopColor="#0d2e18" />
+            <stop offset="45%"  stopColor="#0f3a1e" />
+            <stop offset="72%"  stopColor="#0d3018" />
+            <stop offset="100%" stopColor="#071a0e" />
+          </linearGradient>
 
-          {/* ── Fairway — central bright green ── */}
-          <radialGradient id="fairwayGrad" cx="50%" cy="58%" r="55%">
-            <stop offset="0%"   stopColor="#2d8c50" />
-            <stop offset="40%"  stopColor="#267a43" />
-            <stop offset="75%"  stopColor="#1e6636" />
-            <stop offset="100%" stopColor="#174d29" stopOpacity="0" />
-          </radialGradient>
-
-          {/* ── Putting green — tight, bright ── */}
+          {/* Putting green */}
           <radialGradient id="greenGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stopColor="#3dab65" />
-            <stop offset="55%"  stopColor="#2e9456" />
-            <stop offset="100%" stopColor="#237a43" />
+            <stop offset="0%"   stopColor="#3dba6a" />
+            <stop offset="55%"  stopColor="#2ea055" />
+            <stop offset="100%" stopColor="#1e7a3e" />
           </radialGradient>
 
-          {/* ── Water hazard ── */}
+          {/* Fairway corridor */}
+          <linearGradient id="fairwayGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#2d9c52" stopOpacity="0.9" />
+            <stop offset="50%"  stopColor="#267a43" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#1e6636" stopOpacity="0.9" />
+          </linearGradient>
+
+          {/* Tee box */}
+          <radialGradient id="teeGrad" cx="50%" cy="40%" r="55%">
+            <stop offset="0%"   stopColor="#3aaa60" />
+            <stop offset="60%"  stopColor="#2a8a4a" />
+            <stop offset="100%" stopColor="#1a6030" />
+          </radialGradient>
+
+          {/* Sand */}
+          <radialGradient id="sandGrad" cx="45%" cy="40%" r="60%">
+            <stop offset="0%"   stopColor="#eddba8" />
+            <stop offset="70%"  stopColor="#d4bc82" />
+            <stop offset="100%" stopColor="#b89a5a" />
+          </radialGradient>
+
+          {/* Water */}
           <linearGradient id="pondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%"   stopColor="#0f2d4a" />
             <stop offset="50%"  stopColor="#163c5e" />
             <stop offset="100%" stopColor="#0a2035" />
           </linearGradient>
 
-          {/* ── Sand bunker ── */}
-          <radialGradient id="sandGrad" cx="45%" cy="40%" r="60%">
-            <stop offset="0%"   stopColor="#e8d5a0" />
-            <stop offset="70%"  stopColor="#d4bc82" />
-            <stop offset="100%" stopColor="#b89a5a" />
-          </radialGradient>
-
-          {/* ── Mow stripe overlay ── */}
-          <pattern id="mowStripes" x="0" y="0" width="60" height="900" patternUnits="userSpaceOnUse">
-            <rect x="0"  y="0" width="30" height="900" fill="#ffffff" fillOpacity="0.04" />
-            <rect x="30" y="0" width="30" height="900" fill="#000000" fillOpacity="0.03" />
+          {/* Mow stripes — vertical bands */}
+          <pattern id="mowV" x="0" y="0" width="72" height="3200" patternUnits="userSpaceOnUse">
+            <rect x="0"  y="0" width="36" height="3200" fill="#ffffff" fillOpacity="0.035" />
+            <rect x="36" y="0" width="36" height="3200" fill="#000000" fillOpacity="0.025" />
           </pattern>
 
-          {/* ── Water shimmer ── */}
-          <pattern id="waterShimmer" x="0" y="0" width="80" height="20" patternUnits="userSpaceOnUse">
-            <ellipse cx="40" cy="10" rx="35" ry="2" fill="#ffffff" fillOpacity="0.06" />
+          {/* Horizontal mow stripes on putting green */}
+          <pattern id="mowH" x="0" y="0" width="600" height="28" patternUnits="userSpaceOnUse">
+            <rect x="0" y="0"  width="600" height="14" fill="#ffffff" fillOpacity="0.05" />
+            <rect x="0" y="14" width="600" height="14" fill="#000000" fillOpacity="0.04" />
           </pattern>
 
-          {/* ── Drop shadow for flag ── */}
+          {/* Water shimmer */}
+          <pattern id="waterShimmer" x="0" y="0" width="90" height="22" patternUnits="userSpaceOnUse">
+            <ellipse cx="45" cy="11" rx="38" ry="2.5" fill="#ffffff" fillOpacity="0.07" />
+          </pattern>
+
+          {/* Vignette — darkens left/right edges of corridor */}
+          <linearGradient id="vigL" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="#000" stopOpacity="0.7" />
+            <stop offset="22%"  stopColor="#000" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="vigR" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="78%"  stopColor="#000" stopOpacity="0" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0.7" />
+          </linearGradient>
+
+          {/* Top dark gradient for readability */}
+          <linearGradient id="topFade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#000" stopOpacity="0.55" />
+            <stop offset="12%"  stopColor="#000" stopOpacity="0" />
+          </linearGradient>
+
+          {/* Flag shadow */}
           <filter id="flagShadow">
-            <feDropShadow dx="2" dy="4" stdDeviation="3" floodColor="#000" floodOpacity="0.35" />
+            <feDropShadow dx="2" dy="4" stdDeviation="4" floodColor="#000" floodOpacity="0.4" />
           </filter>
 
-          {/* ── Soft vignette mask ── */}
-          <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
-            <stop offset="0%"   stopColor="#000" stopOpacity="0" />
-            <stop offset="100%" stopColor="#000" stopOpacity="0.55" />
-          </radialGradient>
-
-          {/* ── Pond glare ── */}
-          <radialGradient id="pondGlare" cx="35%" cy="30%" r="50%">
-            <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          {/* Soft glow behind green */}
+          <radialGradient id="greenGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="#2dff80" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#2dff80" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* ════ LAYER 1 — Base rough ════ */}
-        <rect width="1440" height="900" fill="url(#roughGrad)" />
+        {/* ══════════════════════════════════════════
+            BASE — full rough background
+        ══════════════════════════════════════════ */}
+        <rect width="1440" height="3200" fill="url(#roughBg)" />
 
-        {/* ════ LAYER 2 — Fairway (dogleg left then bends right to green) ════ */}
-        {/* Soft base glow under the whole fairway corridor */}
-        <ellipse cx="680" cy="530" rx="700" ry="290" fill="url(#fairwayGrad)" fillOpacity="0.55" />
+        {/* Tree masses — left and right edges throughout */}
+        <rect x="0"    y="0" width="160" height="3200" fill="#040e07" fillOpacity="0.85" />
+        <rect x="1280" y="0" width="160" height="3200" fill="#040e07" fillOpacity="0.85" />
+        <rect x="0"    y="0" width="80"  height="3200" fill="#020704" fillOpacity="0.6" />
+        <rect x="1360" y="0" width="80"  height="3200" fill="#020704" fillOpacity="0.6" />
 
-        {/* Main fairway shape — wide tee-side corridor sweeping left, then
-            elbowing right through the dogleg toward the green upper-right */}
+        {/* Tree silhouettes left */}
+        {[80,180,280,380,480,580,680,780,880,980,1080,1180,1280,1380,1480,1580,1680,1780,1880,1980,2080,2180,2280,2380,2480,2580,2680,2780,2880,2980,3080,3180].map((y, i) => (
+          <ellipse key={`tL${i}`} cx={50 + (i % 3) * 22} cy={y} rx={38 + (i%2)*14} ry={55 + (i%3)*18} fill="#020b05" fillOpacity="0.7" />
+        ))}
+        {/* Tree silhouettes right */}
+        {[120,230,340,440,540,640,740,840,940,1040,1140,1240,1340,1440,1540,1640,1740,1840,1940,2040,2140,2240,2340,2440,2540,2640,2740,2840,2940,3040,3140].map((y, i) => (
+          <ellipse key={`tR${i}`} cx={1390 - (i % 3) * 20} cy={y} rx={36 + (i%2)*12} ry={52 + (i%3)*16} fill="#020b05" fillOpacity="0.7" />
+        ))}
+
+        {/* ══════════════════════════════════════════
+            SECTION 1 — PUTTING GREEN (top, y 0–600)
+        ══════════════════════════════════════════ */}
+
+        {/* Green glow halo */}
+        <ellipse cx="720" cy="320" rx="520" ry="340" fill="url(#greenGlow)" />
+
+        {/* Fringe ring */}
+        <ellipse cx="720" cy="310" rx="310" ry="210" fill="#217a3c" fillOpacity="0.9" />
+
+        {/* Putting green surface */}
+        <ellipse cx="720" cy="300" rx="270" ry="185" fill="url(#greenGrad)" />
+
+        {/* Mow stripe overlay on green */}
+        <ellipse cx="720" cy="300" rx="270" ry="185" fill="url(#mowH)" fillOpacity="0.9" />
+
+        {/* Green highlight */}
+        <ellipse cx="680" cy="255" rx="130" ry="75" fill="#4ecb7a" fillOpacity="0.13" />
+
+        {/* ── Flagstick ── */}
+        {/* Cup */}
+        <ellipse cx="780" cy="308" rx="13" ry="8" fill="#0a1a0e" />
+        <ellipse cx="780" cy="306" rx="10" ry="6" fill="#111" />
+        {/* Pin */}
+        <line x1="780" y1="308" x2="780" y2="118" stroke="#e8e8e8" strokeWidth="3.5" filter="url(#flagShadow)" />
+        {/* Flag */}
+        <path d="M780 118 L840 136 L780 154 Z" fill="#c0392b" filter="url(#flagShadow)" />
+        <path d="M780 118 L840 136 L780 154 Z" fill="#e74c3c" fillOpacity="0.6" />
+
+        {/* Yardage circle on green */}
+        <circle cx="650" cy="340" r="22" fill="#0a1a0e" fillOpacity="0.7" />
+        <text x="650" y="346" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="bold" fontFamily="sans-serif">PIN</text>
+
+        {/* Fringe collar path */}
+        <path d="M450 310 Q560 200 720 200 Q880 200 990 310 Q1050 370 990 430 Q880 520 720 510 Q560 520 450 430 Q390 370 450 310Z"
+          fill="none" stroke="#1a6030" strokeWidth="6" strokeOpacity="0.5" />
+
+        {/* Distance markers near green */}
+        <circle cx="720" cy="520" r="16" fill="#fff" fillOpacity="0.15" stroke="#fff" strokeWidth="1.5" strokeOpacity="0.4" />
+        <text x="720" y="526" textAnchor="middle" fill="#fff" fontSize="11" fontFamily="sans-serif" fillOpacity="0.8">100</text>
+
+        {/* ══════════════════════════════════════════
+            SECTION 2 — UPPER FAIRWAY (y 500–1300)
+            Corridor narrows slightly from green
+        ══════════════════════════════════════════ */}
+
+        {/* Fairway corridor — gentle dogleg right */}
         <path
-          d="M 60 780
-             C 120 720, 200 660, 310 620
-             C 420 580, 530 570, 610 548
-             C 660 534, 680 510, 660 478
-             C 638 444, 590 430, 560 408
-             C 530 385, 530 355, 560 332
-             C 600 302, 680 292, 780 300
-             C 880 308, 980 320, 1060 338
-             C 1140 356, 1200 378, 1230 400
-             C 1260 422, 1270 448, 1250 468
-             C 1220 496, 1150 500, 1090 490
-             C 1040 482, 990 464, 960 448
-             C 920 430, 900 420, 890 420
-             C 878 420, 870 428, 872 440
-             C 876 456, 896 468, 930 480
-             C 970 494, 1020 506, 1060 512
-             C 1100 518, 1160 516, 1200 498
-             C 1240 480, 1270 450, 1280 418
-             C 1295 378, 1280 340, 1240 316
-             C 1180 282, 1080 268, 960 260
-             C 840 252, 720 258, 630 272
-             C 548 285, 490 308, 460 342
-             C 428 378, 432 420, 460 454
-             C 490 490, 540 510, 580 530
-             C 618 548, 624 570, 600 600
-             C 568 636, 490 662, 380 694
-             C 270 726, 150 744, 60 780 Z"
-          fill="#267a43"
+          d="M 480 500
+             C 460 620, 450 750, 470 900
+             C 490 1050, 530 1150, 560 1280
+             L 960 1280
+             C 980 1150, 1010 1050, 1000 900
+             C 990 750, 970 620, 960 500
+             Z"
+          fill="url(#fairwayGrad)"
           fillOpacity="0.82"
         />
 
-        {/* Dogleg elbow highlight — the turn pocket, slightly brighter */}
+        {/* Mow stripes on upper fairway */}
         <path
-          d="M 560 340 C 540 360, 528 390, 540 420 C 552 450, 580 468, 610 468
-             C 640 468, 660 450, 656 424 C 652 396, 630 368, 600 352 C 580 340, 564 334, 560 340 Z"
-          fill="#2e9456"
-          fillOpacity="0.45"
+          d="M 480 500 C 460 620,450 750,470 900 C 490 1050,530 1150,560 1280
+             L 960 1280 C 980 1150,1010 1050,1000 900 C 990 750,970 620,960 500 Z"
+          fill="url(#mowV)"
         />
 
-        {/* Second-shot corridor — after the turn, leading to the green */}
+        {/* 150-yard marker (white posts) */}
+        <rect x="462" y="820" width="8" height="32" rx="3" fill="#ffffff" fillOpacity="0.85" />
+        <rect x="994" y="820" width="8" height="32" rx="3" fill="#ffffff" fillOpacity="0.85" />
+        <circle cx="466" cy="818" r="5" fill="#ffffff" fillOpacity="0.9" />
+        <circle cx="998" cy="818" r="5" fill="#ffffff" fillOpacity="0.9" />
+        <text x="720" y="845" textAnchor="middle" fill="#fff" fontSize="12" fontFamily="sans-serif" fillOpacity="0.7">150 yds</text>
+
+        {/* Upper fairway bunker — left side */}
+        <ellipse cx="420" cy="670" rx="70" ry="38" fill="#8a6820" fillOpacity="0.3" />
+        <ellipse cx="416" cy="665" rx="74" ry="41" fill="url(#sandGrad)" fillOpacity="0.88" />
+        <ellipse cx="414" cy="660" rx="56" ry="30" fill="#eddba8" fillOpacity="0.55" />
+
+        {/* Upper fairway bunker — right side */}
+        <ellipse cx="1040" cy="1050" rx="80" ry="44" fill="#8a6820" fillOpacity="0.28" />
+        <ellipse cx="1036" cy="1045" rx="84" ry="47" fill="url(#sandGrad)" fillOpacity="0.85" />
+        <ellipse cx="1034" cy="1040" rx="64" ry="34" fill="#eddba8" fillOpacity="0.5" />
+
+        {/* ══════════════════════════════════════════
+            SECTION 3 — DOGLEG / MID FAIRWAY (y 1200–2100)
+            Bends left — the elbow of the hole
+        ══════════════════════════════════════════ */}
+
+        {/* Elbow corridor — swings left */}
         <path
-          d="M 870 430 C 920 420, 990 418, 1060 428 C 1110 436, 1150 448, 1160 460
-             C 1170 472, 1150 488, 1100 494 C 1050 500, 990 494, 950 480
-             C 910 466, 880 450, 870 430 Z"
-          fill="#2d8c50"
-          fillOpacity="0.55"
-        />
-
-        {/* Mow stripes clipped to the full fairway */}
-        <clipPath id="fairwayClip">
-          <path d="M 60 780
-             C 120 720, 200 660, 310 620 C 420 580, 530 570, 610 548
-             C 660 534, 680 510, 660 478 C 638 444, 590 430, 560 408
-             C 530 385, 530 355, 560 332 C 600 302, 680 292, 780 300
-             C 880 308, 980 320, 1060 338 C 1140 356, 1200 378, 1230 400
-             C 1260 422, 1270 448, 1250 468 C 1220 496, 1150 500, 1090 490
-             C 1040 482, 990 464, 960 448 C 920 430, 900 420, 890 420
-             C 878 420, 870 428, 872 440 C 876 456, 896 468, 930 480
-             C 970 494, 1020 506, 1060 512 C 1100 518, 1160 516, 1200 498
-             C 1240 480, 1270 450, 1280 418 C 1295 378, 1280 340, 1240 316
-             C 1180 282, 1080 268, 960 260 C 840 252, 720 258, 630 272
-             C 548 285, 490 308, 460 342 C 428 378, 432 420, 460 454
-             C 490 490, 540 510, 580 530 C 618 548, 624 570, 600 600
-             C 568 636, 490 662, 380 694 C 270 726, 150 744, 60 780 Z" />
-        </clipPath>
-        <rect width="1440" height="900" fill="url(#mowStripes)" clipPath="url(#fairwayClip)" className="fairway-stripe" />
-
-        {/* ════ LAYER 3 — Putting green ════ */}
-        <ellipse cx="1080" cy="430" rx="148" ry="112" fill="#2e9456" fillOpacity="0.28" />
-        <ellipse cx="1080" cy="430" rx="130"  ry="95"  fill="url(#greenGrad)" className="green-body" />
-        <clipPath id="greenClip">
-          <ellipse cx="1080" cy="430" rx="130" ry="95" />
-        </clipPath>
-        <rect width="1440" height="900" fill="url(#mowStripes)" clipPath="url(#greenClip)" fillOpacity="0.6" />
-
-        {/* ════ LAYER 4 — Bunkers ════ */}
-
-        {/* INSIDE THE DOGLEG ELBOW — classic "catch bunker" for players
-            cutting the corner too tight. Sits right in the bend. */}
-        <ellipse cx="612" cy="475" rx="55" ry="32" fill="#8a6820" fillOpacity="0.30" />
-        <ellipse cx="608" cy="470" rx="58" ry="34" fill="url(#sandGrad)" fillOpacity="0.92" />
-        <ellipse cx="606" cy="464" rx="44" ry="24" fill="#eddba8" fillOpacity="0.60" />
-
-        {/* OUTSIDE THE ELBOW — punishes the safe bailout left */}
-        <ellipse cx="490" cy="395" rx="70" ry="38" fill="#8a6820" fillOpacity="0.25" />
-        <ellipse cx="486" cy="390" rx="74" ry="40" fill="url(#sandGrad)" fillOpacity="0.88" />
-        <ellipse cx="483" cy="383" rx="56" ry="28" fill="#e8d5a0" fillOpacity="0.55" />
-
-        {/* GREENSIDE BUNKER LEFT — protects left side of the green */}
-        <ellipse cx="925" cy="496" rx="76" ry="40" fill="#a07c30" fillOpacity="0.20" />
-        <ellipse cx="920" cy="490" rx="80" ry="42" fill="url(#sandGrad)" fillOpacity="0.90" />
-        <ellipse cx="918" cy="484" rx="62" ry="30" fill="#e8d5a0" fillOpacity="0.55" />
-
-        {/* GREENSIDE BUNKER RIGHT — deep pot bunker right of the pin */}
-        <ellipse cx="1160" cy="486" rx="52" ry="30" fill="#8a6820" fillOpacity="0.28" />
-        <ellipse cx="1156" cy="481" rx="55" ry="32" fill="url(#sandGrad)" fillOpacity="0.88" />
-        <ellipse cx="1154" cy="475" rx="40" ry="22" fill="#eddba8" fillOpacity="0.62" />
-
-        {/* FAIRWAY BUNKER — mid-fairway on the second shot landing zone */}
-        <ellipse cx="820" cy="340" rx="62" ry="30" fill="#8a6820" fillOpacity="0.22" />
-        <ellipse cx="816" cy="335" rx="65" ry="32" fill="url(#sandGrad)" fillOpacity="0.85" />
-        <ellipse cx="814" cy="329" rx="48" ry="22" fill="#e0c990" fillOpacity="0.50" />
-
-        {/* TEE-SIDE BUNKER — bottom-left, frames the tee box */}
-        <ellipse cx="218" cy="768" rx="140" ry="72" fill="#a07c30" fillOpacity="0.25" />
-        <ellipse cx="210" cy="760" rx="145" ry="75" fill="url(#sandGrad)" fillOpacity="0.88" />
-        <ellipse cx="210" cy="752" rx="120" ry="58" fill="#e0c990" fillOpacity="0.5" />
-
-        {/* BACK CORNER BUNKER — top-right, behind the green */}
-        <ellipse cx="1318" cy="162" rx="170" ry="86" fill="#a07c30" fillOpacity="0.22" />
-        <ellipse cx="1310" cy="155" rx="175" ry="90" fill="url(#sandGrad)" fillOpacity="0.85" />
-        <ellipse cx="1300" cy="148" rx="140" ry="68" fill="#e0c990" fillOpacity="0.45" />
-
-        {/* ════ LAYER 5 — Water hazard ════ */}
-        <path
-          d="M 320 140 C 380 100,500 95,560 130 C 610 158,615 205,575 230
-             C 530 260,440 265,370 245 C 295 223,265 185,320 140 Z"
-          fill="url(#pondGrad)"
+          d="M 560 1280
+             C 540 1380, 480 1480, 400 1560
+             C 320 1640, 260 1720, 280 1840
+             C 300 1960, 400 2020, 520 2060
+             L 680 2060
+             C 700 1980, 700 1880, 660 1800
+             C 620 1720, 620 1640, 660 1560
+             C 720 1460, 800 1380, 840 1280
+             Z"
+          fill="url(#fairwayGrad)"
+          fillOpacity="0.78"
         />
         <path
-          d="M 320 140 C 380 100,500 95,560 130 C 610 158,615 205,575 230
-             C 530 260,440 265,370 245 C 295 223,265 185,320 140 Z"
-          fill="url(#pondGlare)"
-        />
-        <path
-          d="M 320 140 C 380 100,500 95,560 130 C 610 158,615 205,575 230
-             C 530 260,440 265,370 245 C 295 223,265 185,320 140 Z"
-          fill="url(#waterShimmer)"
-          fillOpacity="0.7"
-        />
-        <path
-          d="M 320 140 C 380 100,500 95,560 130 C 610 158,615 205,575 230
-             C 530 260,440 265,370 245 C 295 223,265 185,320 140 Z"
-          fill="none" stroke="#1a6640" strokeWidth="3" strokeOpacity="0.4"
-        />
-        {/* Yellow hazard stake */}
-        <line x1="560" y1="230" x2="560" y2="195" stroke="#e8c020" strokeWidth="2.5" strokeOpacity="0.8" />
-        <circle cx="560" cy="193" r="4" fill="#e8c020" fillOpacity="0.9" />
-
-        {/* ════ LAYER 6 — Flagstick ════ */}
-        <ellipse cx="1092" cy="356" rx="8" ry="3" fill="#000" fillOpacity="0.25" />
-        <line x1="1085" y1="356" x2="1085" y2="298" stroke="#e8e8d8" strokeWidth="2.5" filter="url(#flagShadow)" />
-        <path d="M 1085 298 L 1118 307 L 1085 316 Z" fill="#cc2222" filter="url(#flagShadow)" />
-        <path d="M 1085 298 L 1118 307 L 1085 316 Z" fill="#ffffff" fillOpacity="0.12" />
-        <circle cx="1085" cy="357" r="5" fill="#111" fillOpacity="0.7" />
-        <circle cx="1085" cy="357" r="5" fill="none" stroke="#888" strokeWidth="1" />
-
-        {/* ════ LAYER 7 — Cart path ════ */}
-        <path
-          d="M 0 680 C 200 670,350 640,500 620 C 650 600,820 570,1000 540 C 1150 515,1300 490,1440 460"
-          fill="none" stroke="#b5a878" strokeWidth="14" strokeOpacity="0.28" strokeLinecap="round"
-        />
-        <path
-          d="M 0 680 C 200 670,350 640,500 620 C 650 600,820 570,1000 540 C 1150 515,1300 490,1440 460"
-          fill="none" stroke="#d4c89a" strokeWidth="2" strokeOpacity="0.18"
-          strokeDasharray="24 18" strokeLinecap="round"
+          d="M 560 1280 C 540 1380,480 1480,400 1560 C 320 1640,260 1720,280 1840
+             C 300 1960,400 2020,520 2060 L 680 2060
+             C 700 1980,700 1880,660 1800 C 620 1720,620 1640,660 1560
+             C 720 1460,800 1380,840 1280 Z"
+          fill="url(#mowV)"
         />
 
-        {/* ════ LAYER 8 — Rough masses at edges ════ */}
+        {/* Water hazard — left of dogleg elbow */}
+        <ellipse cx="210" cy="1650" rx="155" ry="90" fill="#0a1e30" fillOpacity="0.3" />
+        <ellipse cx="205" cy="1645" rx="160" ry="95" fill="url(#pondGrad)" fillOpacity="0.92" />
+        <ellipse cx="205" cy="1645" rx="160" ry="95" fill="url(#waterShimmer)" fillOpacity="0.85" />
+        {/* Pond glare */}
+        <ellipse cx="175" cy="1615" rx="70" ry="35" fill="#ffffff" fillOpacity="0.08" />
+        {/* Shoreline */}
+        <ellipse cx="205" cy="1645" rx="162" ry="97" fill="none" stroke="#1a5c2a" strokeWidth="6" strokeOpacity="0.5" />
+        {/* Hazard stake */}
+        <line x1="350" y1="1580" x2="350" y2="1630" stroke="#e8c93c" strokeWidth="3" />
+        <rect x="345" y="1578" width="10" height="6" rx="1" fill="#e8c93c" />
+        {/* Water text */}
+        <text x="205" y="1650" textAnchor="middle" fill="#4a9edd" fontSize="14" fontFamily="sans-serif" fillOpacity="0.6">WATER</text>
+
+        {/* Dogleg elbow bunker — inside corner */}
+        <ellipse cx="700" cy="1430" rx="65" ry="36" fill="#8a6820" fillOpacity="0.3" />
+        <ellipse cx="696" cy="1425" rx="68" ry="39" fill="url(#sandGrad)" fillOpacity="0.88" />
+        <ellipse cx="694" cy="1420" rx="52" ry="28" fill="#eddba8" fillOpacity="0.55" />
+
+        {/* Dogleg elbow bunker — outside corner */}
+        <ellipse cx="230" cy="1820" rx="72" ry="40" fill="#8a6820" fillOpacity="0.28" />
+        <ellipse cx="226" cy="1815" rx="75" ry="43" fill="url(#sandGrad)" fillOpacity="0.85" />
+        <ellipse cx="224" cy="1810" rx="58" ry="32" fill="#eddba8" fillOpacity="0.5" />
+
+        {/* 200-yard marker */}
+        <circle cx="580" cy="1650" r="18" fill="#fff" fillOpacity="0.12" stroke="#fff" strokeWidth="1.5" strokeOpacity="0.35" />
+        <text x="580" y="1656" textAnchor="middle" fill="#fff" fontSize="11" fontFamily="sans-serif" fillOpacity="0.7">200</text>
+
+        {/* ══════════════════════════════════════════
+            SECTION 4 — LOWER FAIRWAY (y 2000–2700)
+            Corridor widens back toward tee
+        ══════════════════════════════════════════ */}
+
         <path
-          d="M 0 0 L 380 0 C 320 40,260 90,200 150 C 130 220,70 300,40 400 C 15 480,0 560,0 640 Z"
-          fill="#0a2410" fillOpacity="0.55"
+          d="M 520 2060
+             C 490 2180, 470 2300, 460 2440
+             C 450 2580, 460 2680, 480 2760
+             L 960 2760
+             C 980 2680, 990 2580, 980 2440
+             C 970 2300, 950 2180, 920 2060
+             Z"
+          fill="url(#fairwayGrad)"
+          fillOpacity="0.80"
         />
         <path
-          d="M 1440 900 L 1060 900 C 1130 840,1200 780,1260 700 C 1330 610,1400 500,1430 380 C 1440 300,1440 200,1440 100 Z"
-          fill="#0a2410" fillOpacity="0.5"
-        />
-        <path
-          d="M 400 900 C 500 860,620 840,720 845 C 820 850,940 865,1040 900 Z"
-          fill="#0f2e18" fillOpacity="0.65"
+          d="M 520 2060 C 490 2180,470 2300,460 2440 C 450 2580,460 2680,480 2760
+             L 960 2760 C 980 2680,990 2580,980 2440 C 970 2300,950 2180,920 2060 Z"
+          fill="url(#mowV)"
         />
 
-        {/* ════ LAYER 9 — Vignette ════ */}
-        <rect width="1440" height="900" fill="url(#vignette)" />
+        {/* 250-yard marker */}
+        <rect x="453" y="2270" width="8" height="28" rx="3" fill="#ffdd44" fillOpacity="0.8" />
+        <rect x="979" y="2270" width="8" height="28" rx="3" fill="#ffdd44" fillOpacity="0.8" />
+        <text x="720" y="2295" textAnchor="middle" fill="#ffdd44" fontSize="12" fontFamily="sans-serif" fillOpacity="0.75">250 yds</text>
 
-        {/* ════ LAYER 10 — Readability overlay ════ */}
-        <rect width="1440" height="900" fill="#060f0a" fillOpacity="0.28" />
+        {/* Mid fairway bunker */}
+        <ellipse cx="980" cy="2200" rx="75" ry="42" fill="#8a6820" fillOpacity="0.28" />
+        <ellipse cx="976" cy="2195" rx="78" ry="45" fill="url(#sandGrad)" fillOpacity="0.85" />
+        <ellipse cx="974" cy="2190" rx="60" ry="34" fill="#eddba8" fillOpacity="0.5" />
+
+        {/* Second water hazard — right side lower fairway */}
+        <ellipse cx="1250" cy="2400" rx="140" ry="80" fill="#0a1e30" fillOpacity="0.28" />
+        <ellipse cx="1246" cy="2396" rx="145" ry="84" fill="url(#pondGrad)" fillOpacity="0.9" />
+        <ellipse cx="1246" cy="2396" rx="145" ry="84" fill="url(#waterShimmer)" fillOpacity="0.8" />
+        <ellipse cx="1220" cy="2370" rx="60" ry="28" fill="#ffffff" fillOpacity="0.07" />
+        <text x="1246" y="2400" textAnchor="middle" fill="#4a9edd" fontSize="13" fontFamily="sans-serif" fillOpacity="0.6">WATER</text>
+
+        {/* ══════════════════════════════════════════
+            SECTION 5 — TEE BOX (bottom, y 2700–3200)
+        ══════════════════════════════════════════ */}
+
+        {/* Tee box surface */}
+        <rect x="580" y="2820" width="280" height="160" rx="18" fill="url(#teeGrad)" />
+        <rect x="580" y="2820" width="280" height="160" rx="18" fill="url(#mowH)" fillOpacity="0.8" />
+
+        {/* Tee box border */}
+        <rect x="580" y="2820" width="280" height="160" rx="18" fill="none" stroke="#1a7a38" strokeWidth="4" strokeOpacity="0.6" />
+
+        {/* Tee markers */}
+        {/* Blue tees */}
+        <circle cx="660" cy="2848" r="9" fill="#1a56db" stroke="#fff" strokeWidth="2" />
+        <text x="660" y="2875" textAnchor="middle" fill="#93c5fd" fontSize="10" fontFamily="sans-serif">BLUE</text>
+        {/* White tees */}
+        <circle cx="720" cy="2848" r="9" fill="#e5e7eb" stroke="#fff" strokeWidth="2" />
+        <text x="720" y="2875" textAnchor="middle" fill="#e5e7eb" fontSize="10" fontFamily="sans-serif">WHITE</text>
+        {/* Red tees */}
+        <circle cx="780" cy="2848" r="9" fill="#dc2626" stroke="#fff" strokeWidth="2" />
+        <text x="780" y="2875" textAnchor="middle" fill="#fca5a5" fontSize="10" fontFamily="sans-serif">RED</text>
+
+        {/* Tee label */}
+        <text x="720" y="2970" textAnchor="middle" fill="#ffffff" fontSize="22" fontWeight="bold" fontFamily="sans-serif" fillOpacity="0.5" letterSpacing="6">TEE BOX</text>
+
+        {/* Direction arrow pointing up the fairway */}
+        <path d="M720 2810 L700 2840 L710 2840 L710 2870 L730 2870 L730 2840 L740 2840 Z"
+          fill="#ffffff" fillOpacity="0.25" />
+
+        {/* Tee box bunker — left */}
+        <ellipse cx="460" cy="2900" rx="90" ry="48" fill="#8a6820" fillOpacity="0.25" />
+        <ellipse cx="456" cy="2895" rx="94" ry="52" fill="url(#sandGrad)" fillOpacity="0.82" />
+        <ellipse cx="454" cy="2890" rx="72" ry="38" fill="#eddba8" fillOpacity="0.48" />
+
+        {/* Tee box bunker — right */}
+        <ellipse cx="980" cy="2900" rx="90" ry="48" fill="#8a6820" fillOpacity="0.25" />
+        <ellipse cx="976" cy="2895" rx="94" ry="52" fill="url(#sandGrad)" fillOpacity="0.82" />
+        <ellipse cx="974" cy="2890" rx="72" ry="38" fill="#eddba8" fillOpacity="0.48" />
+
+        {/* ══════════════════════════════════════════
+            OVERLAYS — vignette, readability film
+        ══════════════════════════════════════════ */}
+
+        {/* Left tree shadow */}
+        <rect x="0" y="0" width="1440" height="3200" fill="url(#vigL)" />
+        {/* Right tree shadow */}
+        <rect x="0" y="0" width="1440" height="3200" fill="url(#vigR)" />
+        {/* Top fade for nav readability */}
+        <rect x="0" y="0" width="1440" height="400" fill="url(#topFade)" />
+        {/* Overall dark film for text legibility */}
+        <rect x="0" y="0" width="1440" height="3200" fill="#000" fillOpacity="0.28" />
       </svg>
     </div>
   )
