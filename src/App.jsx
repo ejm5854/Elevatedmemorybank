@@ -1,1 +1,28 @@
-aW1wb3J0IHsgQnJvd3NlclJvdXRlciwgUm91dGVzLCBSb3V0ZSwgdXNlTmF2aWdhdGUsIHVzZUxvY2F0aW9uIH0gZnJvbSAncmVhY3Qtcm91dGVyLWRvbScKaW1wb3J0IEhvbWUgZnJvbSAnLi9wYWdlcy9Ib21lLmpzeCcKaW1wb3J0IE5ld1JvdW5kIGZyb20gJy4vcGFnZXMvTmV3Um91bmQuanN4JwppbXBvcnQgU2NvcmVjYXJkIGZyb20gJy4vcGFnZXMvU2NvcmVjYXJkLmpzeCcKaW1wb3J0IExlYWRlcmJvYXJkIGZyb20gJy4vcGFnZXMvTGVhZGVyYm9hcmQuanN4JwppbXBvcnQgQ291cnNlcyBmcm9tICcuL3BhZ2VzL0NvdXJzZXMuanN4JwppbXBvcnQgQ291cnNlRGV0YWlsIGZyb20gJy4vcGFnZXMvQ291cnNlRGV0YWlsLmpzeCcKaW1wb3J0IENvdXJzZUJhY2tncm91bmQgZnJvbSAnLi9jb21wb25lbnRzL0NvdXJzZUJhY2tncm91bmQuanN4JwoKZnVuY3Rpb24gTmF2KCkgewogIGNvbnN0IG5hdmlnYXRlID0gdXNlTmF2aWdhdGUoKQogIGNvbnN0IGxvY2F0aW9uID0gdXNlTG9jYXRpb24oKQoKICBjb25zdCBsaW5rcyA9IFsKICAgIHsgbGFiZWw6ICdIb21lJywgcGF0aDogJy8nIH0sCiAgICB7IGxhYmVsOiAnQ291cnNlcycsIHBhdGg6ICcvY291cnNlcycgfSwKICAgIHsgbGFiZWw6ICdMZWFkZXJib2FyZCcsIHBhdGg6ICcvbGVhZGVyYm9hcmQnIH0sCiAgXQoKICByZXR1cm4gKAogICAgPG5hdiBjbGFzc05hbWU9Im5hdiI+CiAgICAgIDxkaXYgY2xhc3NOYW1lPSJuYXYtaW5uZXIiPgogICAgICAgIDxkaXYgY2xhc3NOYW1lPSJuYXYtbG9nbyIgb25DbGljaz17KCkgPT4gbmF2aWdhdGUoJy8nKX0gc3R5bGU9e3sgY3Vyc29yOiAncG9pbnRlcicgfX0+CiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ibmF2LWxvZ28taWNvbiI+4puzPC9kaXY+CiAgICAgICAgICBFbGV2YXRlZCBHb2xmaW5nCiAgICAgICAgPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzc05hbWU9Im5hdi1saW5rcyI+CiAgICAgICAgICB7bGlua3MubWFwKChsKSA9PiAoCiAgICAgICAgICAgIDxidXR0b24KICAgICAgICAgICAgICBrZXk9e2wucGF0aH0KICAgICAgICAgICAgICBjbGFzc05hbWU9e2BuYXYtbGluayAke2xvY2F0aW9uLnBhdGhuYW1lID09PSBsLnBhdGggfHwgKGwucGF0aCAhPT0gJy8nICYmIGxvY2F0aW9uLnBhdGhuYW1lLnN0YXJ0c1dpdGgobC5wYXRoKSkgPyAnYWN0aXZlJyA6ICcnfWB9CiAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gbmF2aWdhdGUobC5wYXRoKX0KICAgICAgICAgICAgPgogICAgICAgICAgICAgIHtsLmxhYmVsfQogICAgICAgICAgICA8L2J1dHRvbj4KICAgICAgICAgICkpfQogICAgICAgIDwvZGl2PgogICAgICAgIDxidXR0b24gY2xhc3NOYW1lPSJuYXYtY3RhIiBvbkNsaWNrPXsoKSA9PiBuYXZpZ2F0ZSgnL25ldy1yb3VuZCcpfT4KICAgICAgICAgICsgU3RhcnQgUm91bmQKICAgICAgICA8L2J1dHRvbj4KICAgICAgPC9kaXY+CiAgICA8L25hdj4KICApCn0KCmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIEFwcCgpIHsKICByZXR1cm4gKAogICAgPEJyb3dzZXJSb3V0ZXI+CiAgICAgIDxDb3Vyc2VCYWNrZ3JvdW5kIC8+CiAgICAgIDxOYXYgLz4KICAgICAgPFJvdXRlcz4KICAgICAgICA8Um91dGUgcGF0aD0iLyIgZWxlbWVudD17PEhvbWUgLz59IC8+CiAgICAgICAgPFJvdXRlIHBhdGg9Ii9jb3Vyc2VzIiBlbGVtZW50PXs8Q291cnNlcyAvPn0gLz4KICAgICAgICA8Um91dGUgcGF0aD0iL2NvdXJzZXMvOmlkIiBlbGVtZW50PXs8Q291cnNlRGV0YWlsIC8+fSAvPgogICAgICAgIDxSb3V0ZSBwYXRoPSIvbmV3LXJvdW5kIiBlbGVtZW50PXs8TmV3Um91bmQgLz59IC8+CiAgICAgICAgPFJvdXRlIHBhdGg9Ii9yb3VuZC86aWQiIGVsZW1lbnQ9ezxTY29yZWNhcmQgLz59IC8+CiAgICAgICAgPFJvdXRlIHBhdGg9Ii9yb3VuZC86aWQvbGVhZGVyYm9hcmQiIGVsZW1lbnQ9ezxMZWFkZXJib2FyZCAvPn0gLz4KICAgICAgICA8Um91dGUgcGF0aD0iL2xlYWRlcmJvYXJkIiBlbGVtZW50PXs8TGVhZGVyYm9hcmQgLz59IC8+CiAgICAgIDwvUm91dGVzPgogICAgPC9Ccm93c2VyUm91dGVyPgogICkKfQo=
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import Home from './pages/Home'
+import Trips from './pages/Trips'
+import MapPage from './pages/MapPage'
+import Favorites from './pages/Favorites'
+import BucketList from './pages/BucketList'
+import Stats from './pages/Stats'
+
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen bg-cream">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/trips" element={<Trips />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/bucket-list" element={<BucketList />} />
+          <Route path="/stats" element={<Stats />} />
+        </Routes>
+      </div>
+    </Router>
+  )
+}
+
+export default App
