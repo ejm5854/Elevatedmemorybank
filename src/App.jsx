@@ -1,1 +1,2 @@
-__DELETE__
+// App handled by App.tsx
+export {};
