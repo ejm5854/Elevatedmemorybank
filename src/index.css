@@ -3,20 +3,47 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    background-color: #F5F0E8;
-    font-family: 'Inter', system-ui, sans-serif;
-    color: #1C2B3A;
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
-  h1, h2, h3, h4 {
-    font-family: 'Playfair Display', Georgia, serif;
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
   }
 }
 
-@layer utilities {
-  .polaroid {
-    background: white;
-    padding: 12px 12px 40px 12px;
-    box-shadow: 2px 4px 12px rgba(0,0,0,0.15);
-  }
+/* Leaflet map container height fix */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
 }
+
+/* Map popup responsive helpers */
+@media (min-width: 768px) {
+  .map-popup-mobile  { display: none !important; }
+  .map-popup-desktop { display: block !important; }
+}
+@media (max-width: 767px) {
+  .map-popup-mobile  { display: block !important; }
+  .map-popup-desktop { display: none !important; }
+}
+
+/* Pin pulse animation */
+@keyframes pin-pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  70%  { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Scrollbar theming */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,0.5); }
