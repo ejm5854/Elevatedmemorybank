@@ -37,7 +37,6 @@ export default function Navbar() {
         position: 'fixed',
         top: 0, left: 0, right: 0,
         zIndex: 50,
-        // Glass morphism: transitions between transparent (hero) and opaque
         backgroundColor: scrolled
           ? `${theme.navBgHex}ee`
           : `${theme.navBgHex}99`,
@@ -62,7 +61,7 @@ export default function Navbar() {
           justifyContent: 'space-between',
         }}
       >
-        {/* ── Wordmark ───────────────────────────────── */}
+        {/* -- Wordmark */}
         <NavLink
           to="/"
           style={{
@@ -79,7 +78,7 @@ export default function Navbar() {
           Elevated
         </NavLink>
 
-        {/* ── Nav links ──────────────────────────────── */}
+        {/* -- Nav links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           {NAV_LINKS.map(({ to, label }) => (
             <NavLink
@@ -106,7 +105,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* ── Lock / user indicator ──────────────────── */}
+        {/* -- Lock / user indicator */}
         <motion.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
@@ -139,7 +138,6 @@ export default function Navbar() {
             el.style.backgroundColor = `${theme.accentHex}0e`
           }}
         >
-          {/* Avatar dot */}
           <span style={{
             width: 7, height: 7, borderRadius: '50%',
             backgroundColor: theme.accentHex,
