@@ -1,2 +1,1 @@
-// App handled by App.tsx
-export {};
+export { default } from './App.tsx'
