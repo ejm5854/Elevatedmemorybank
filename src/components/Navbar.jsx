@@ -1,2 +1,1 @@
-// Navbar handled by Navbar.tsx
-export {};
+export { default } from './Navbar.tsx'
